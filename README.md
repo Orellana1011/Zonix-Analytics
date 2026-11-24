@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/ZONIX LOGO.png" alt="Logo ZONIX" width="120"/>
+  <img src="zonix-logo.png" alt="Logo ZONIX" width="140"/>
 </p>
 
 # ZONIX - RetailVision Analytics
