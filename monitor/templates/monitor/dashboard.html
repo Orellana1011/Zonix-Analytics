@@ -1,0 +1,320 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZONIX | Panel de Analítica Térmica</title>
+  <link rel="icon" type="image/png" href="{% static 'ZONIX LOGO.png' %}" />
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(92, 255, 0, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(0, 184, 255, 0.10) 0%, transparent 42%),
+        #030508;
+      color: #e2e8f0;
+      padding: 20px;
+    }
+    .container { max-width: 1260px; margin: 0 auto; }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: #070b12;
+      border: 1px solid rgba(0, 212, 255, 0.35);
+      box-shadow: 0 0 28px rgba(0, 184, 255, 0.10);
+      border-radius: 16px;
+      padding: 14px 22px;
+      margin-bottom: 18px;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-logo {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 10px rgba(92, 255, 0, 0.35));
+    }
+    .brand {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #5cff00 0%, #00d4ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+    .slogan {
+      font-size: 12px;
+      color: #5cff00;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .sub { font-size: 13px; color: #94a3b8; margin-top: 2px; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      padding: 9px 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 212, 255, 0.45);
+      background: #0b1220;
+      color: #00d4ff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    .btn-neon {
+      background: linear-gradient(90deg, #5cff00 0%, #00d4ff 100%);
+      color: #02060c;
+      border: none;
+      box-shadow: 0 4px 16px rgba(92, 255, 0, 0.22);
+    }
+    .msg {
+      padding: 11px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      background: rgba(92, 255, 0, 0.10);
+      border: 1px solid rgba(92, 255, 0, 0.45);
+      color: #d9f99d;
+      font-size: 14px;
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .kpi {
+      background: #070b12;
+      border: 1px solid #162032;
+      border-radius: 14px;
+      padding: 16px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #5cff00, #00d4ff);
+    }
+    .kpi-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #00d4ff;
+      margin-top: 6px;
+    }
+    .kpi-val.neon { color: #5cff00; }
+    .grid-main {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 900px) { .grid-main { grid-template-columns: 1fr; } }
+    .panel {
+      background: #070b12;
+      border: 1px solid #162032;
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 16px;
+      color: #00d4ff;
+      letter-spacing: 0.3px;
+    }
+    .filtros { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .filtros a {
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      text-decoration: none;
+      color: #cbd5e1;
+      border: 1px solid #1e293b;
+      background: #04070c;
+    }
+    .filtros a.activo {
+      background: linear-gradient(90deg, #5cff00 0%, #00d4ff 100%);
+      color: #02060c;
+      font-weight: 800;
+      border-color: transparent;
+    }
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .zona-card {
+      border-radius: 12px;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+    .zona-caliente {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.36), rgba(127, 29, 29, 0.50));
+      border-color: rgba(248, 113, 113, 0.45);
+    }
+    .zona-templada {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.32), rgba(120, 53, 15, 0.48));
+      border-color: rgba(251, 191, 36, 0.45);
+    }
+    .zona-fria {
+      background: linear-gradient(135deg, rgba(0, 184, 255, 0.28), rgba(7, 89, 133, 0.48));
+      border-color: rgba(0, 212, 255, 0.45);
+    }
+    .zona-titulo { font-weight: 700; font-size: 15px; color: #ffffff; }
+    .zona-meta { font-size: 13px; color: #e2e8f0; margin-top: 6px; }
+    .zona-tag { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 800; color: #5cff00; }
+    .input-dark {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      background: #020408;
+      color: #f8fafc;
+    }
+    .input-dark:focus {
+      outline: none;
+      border-color: #00d4ff;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 9px 8px; border-bottom: 1px solid #162032; text-align: left; }
+    th { color: #5cff00; font-weight: 700; }
+    .rec-box {
+      background: #030508;
+      border-left: 3px solid #5cff00;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand-group">
+        <img src="{% static 'ZONIX LOGO.png' %}" alt="Logo ZONIX" class="header-logo" />
+        <div>
+          <div class="brand">ZONIX · RetailVision Analytics</div>
+          <div class="slogan">Visión inteligente, decisiones más grandes</div>
+          <div class="sub">Usuario: <strong>{{ request.user.username }}</strong> · Visitas en esta sesión: <strong>{{ visitas_sesion_demo }}</strong></div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        {% if puede_ejecutar_vision %}
+          <form method="post" action="{% url 'capturar_vision' %}" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-neon">Analizar Ciclo de Visión Anónima</button>
+          </form>
+        {% endif %}
+        <a class="btn" href="/admin/">Django Admin</a>
+        <a class="btn" href="{% url 'logout' %}">Cerrar Sesión</a>
+      </div>
+    </header>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="msg">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="kpi-label">Visitas Totales Acumuladas</div>
+        <div class="kpi-val neon">{{ total_visitas }}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Pasillo Estrella</div>
+        <div class="kpi-val">{% if estrella %}{{ estrella.codigo }} · {{ estrella.nombre }}{% else %}-{% endif %}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Zona Fría Prioritaria</div>
+        <div class="kpi-val">{% if zona_fria %}{{ zona_fria.codigo }} · {{ zona_fria.nombre }}{% else %}-{% endif %}</div>
+      </div>
+    </div>
+
+    <div class="grid-main">
+      <div class="panel">
+        <h2>Mapa de Calor por Pasillos</h2>
+        <div class="filtros">
+          <a href="?zona=todas" class="{% if filtro_activo == 'todas' %}activo{% endif %}">Todos</a>
+          <a href="?zona=caliente" class="{% if filtro_activo == 'caliente' %}activo{% endif %}">Zona Caliente</a>
+          <a href="?zona=templada" class="{% if filtro_activo == 'templada' %}activo{% endif %}">Zona Templada</a>
+          <a href="?zona=fria" class="{% if filtro_activo == 'fria' %}activo{% endif %}">Zona Fría</a>
+        </div>
+
+        <div class="heatmap-grid">
+          {% for p in pasillos %}
+            <div class="zona-card zona-{{ p.zona_termica }}">
+              <div class="zona-titulo">{{ p.codigo }} · {{ p.nombre }}</div>
+              <div class="zona-meta">Visitas: <strong>{{ p.visitas }}</strong> | Permanencia: <strong>{{ p.tiempo_promedio_seg }}s</strong></div>
+              <div class="zona-tag">{{ p.etiqueta_zona }}</div>
+            </div>
+          {% empty %}
+            <p>No hay pasillos para el filtro seleccionado.</p>
+          {% endfor %}
+        </div>
+
+        <h2 style="margin-top: 18px;">Recomendaciones Comerciales</h2>
+        <div class="rec-box">
+          {% if estrella %}
+            <div><strong>Pasillo Estrella:</strong> Colocar productos de impulso o alto margen en <strong>{{ estrella.nombre }}</strong> ({{ estrella.visitas }} visitas, {{ estrella.tiempo_promedio_seg }}s promedio).</div>
+          {% endif %}
+          {% if zona_fria %}
+            <div style="margin-top: 6px;"><strong>Zona Fría:</strong> Reubicar ofertas atractivas y mejorar iluminación en <strong>{{ zona_fria.nombre }}</strong> ({{ zona_fria.visitas }} visitas, {{ zona_fria.tiempo_promedio_seg }}s promedio).</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Registrar Flujo (Formulario Validado)</h2>
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-neon" style="width:100%;">Guardar Registro de Flujo</button>
+        </form>
+
+        <h2 style="margin-top: 20px;">Historial Reciente (ORM)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Pasillo</th>
+              <th>Flujo</th>
+              <th>Perm.</th>
+              <th>Origen</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in historial %}
+              <tr>
+                <td>{{ r.pasillo.codigo }}</td>
+                <td>+{{ r.visitas_sumadas }}</td>
+                <td>{{ r.permanencia_seg }}s</td>
+                <td>{{ r.get_origen_display }}</td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="4">Sin registros aún.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
